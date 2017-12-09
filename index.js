@@ -1,18 +1,18 @@
 'use strict';
 
 const XLSX = require('xlsx'),
-      nodejieba = require("nodejieba");
+      nodejieba = require("nodejieba")
 
 // put xlsx in the same dir
-const DATA = require('./data.js');
+const DATA = require('./data.js')
 
 const keywords = DATA.myKeywords,
-      keywordsArr = keywords.split(',');
+      keywordsArr = keywords.split(',')
 
-const xlsFile = DATA.xlsFileName;
+const xlsFile = DATA.xlsFileName
 
-const obj = main();
-console.log("%j", obj);
+const obj = main()
+console.log("%j", obj)
 
 
 // ************************************************************** //
@@ -68,12 +68,10 @@ function goThroughXlsx(filePath, dic) {
 
   let desiredWordCell = worksheet[sheetWordIndex.join('')]
 
-
   let parsedDic = {}
   while (desiredWordCell) {
     // 得到每一个
     let curWordValue = desiredWordCell.v
-      // console.log(desiredWordCell.v)
 
     for (let key in dic) {
       if (!parsedDic[key])
@@ -83,7 +81,7 @@ function goThroughXlsx(filePath, dic) {
         // 找到匹配的 record 了
         if (curWordValue.includes(seg)) {
           let recordTuple = {}
-          recordTuple[desiredWordCell.v] = dyeRecord(colIndex)
+          recordTuple[desiredWordCell.v] = linkRecord(colIndex)
 
           if (!parsedDic[key][seg])
             parsedDic[key][seg] = []
@@ -99,30 +97,39 @@ function goThroughXlsx(filePath, dic) {
 
     desiredWordCell = worksheet[sheetWordIndex.join('')]
 
+    // 测试用，会删掉
     if (sheetWordIndex[1] === 13)
       break;
   }
 
   return parsedDic
 
-  // dyeRecord
-  // 符合”保留条件“的 green
-  // 符合”剔除条件“的 red
-  // others, black
-  function dyeRecord(index) {
+  // linkRecord
+  // record which has related word will be
+  // pushed into specific array as the corresponding value of
+  // the word
+  function linkRecord(index) {
     sheetRankIndex = ['C', index]
     sheetDeltaIndex = ['D', index]
     sheetExpIndex = ['E', index]
     sheetCountIndex = ['F', index]
 
     let arr = []
-    const desiredRankValue = worksheet[sheetRankIndex.join('')] ? worksheet[sheetRankIndex.join('')].v : 'blank',
+    const desiredRankValue = worksheet[sheetRankIndex.join('')] ? worksheet[sheetRankIndex.join('')].v : 'n',
       desiredDeltaValue = worksheet[sheetDeltaIndex.join('')] ? worksheet[sheetDeltaIndex.join('')].v : 'blank',
       desiredExpValue = worksheet[sheetExpIndex.join('')] ? worksheet[sheetExpIndex.join('')].v : 'blank',
       desiredCountValue = worksheet[sheetCountIndex.join('')] ? worksheet[sheetCountIndex.join('')].v : 'blank'
 
     arr.push(desiredRankValue, desiredDeltaValue, desiredExpValue, desiredCountValue)
 
+    return arr
+  }
+
+  // dyeRecord
+  // 符合”保留条件“的 green
+  // 符合”剔除条件“的 red
+  // default, black
+  function dyeRecord(records) {
     // 符合保留条件
     // if () {
 
@@ -131,6 +138,5 @@ function goThroughXlsx(filePath, dic) {
     // } else {
 
     // }
-    return arr
   }
 }
