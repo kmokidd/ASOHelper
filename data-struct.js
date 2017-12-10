@@ -26,7 +26,7 @@
     }, {
       record8: [rank, delta, hotness, count, color]
     }]
-  },
+  }
   keyword2: {
     seg1: [{
       record1: [rank, delta, hotness, count, color]
