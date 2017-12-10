@@ -20,7 +20,7 @@ console.log("%j", obj)
 function main() {
   let dic = {}
 
-  for (keyword of keywordsArr) {
+  for (let keyword of keywordsArr) {
     let result = nodejieba.cut(keyword)
       // convert array to set to delete duplicate words
     dic[keyword] = Array.from(new Set(generateReGroup(result)))
@@ -98,7 +98,7 @@ function goThroughXlsx(filePath, dic) {
     desiredWordCell = worksheet[sheetWordIndex.join('')]
 
     // 测试用，会删掉
-    if (sheetWordIndex[1] === 13)
+    if (sheetWordIndex[1] === 20)
       break;
   }
 
@@ -109,10 +109,10 @@ function goThroughXlsx(filePath, dic) {
   // pushed into specific array as the corresponding value of
   // the word
   function linkRecord(index) {
-    sheetRankIndex = ['C', index]
-    sheetDeltaIndex = ['D', index]
-    sheetExpIndex = ['E', index]
-    sheetCountIndex = ['F', index]
+    let sheetRankIndex = ['C', index],
+        sheetDeltaIndex = ['D', index],
+        sheetExpIndex = ['E', index],
+        sheetCountIndex = ['F', index]
 
     let arr = []
     const desiredRankValue = worksheet[sheetRankIndex.join('')] ? worksheet[sheetRankIndex.join('')].v : 'n',
