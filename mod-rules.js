@@ -3,7 +3,7 @@
 
 'use strict'
 
-const RULES = require('mod-rules.js')
+const RULES = require('config.js')
 
 let isInRankLimit, isDeltaGood, isCompetitive,
     isOutRankLimit, isDeltaBad
@@ -35,16 +35,21 @@ module.exports = exports = {
   setRecord: function(record) {
     _record = record
   },
-  isKept: function() {
-    if (isInRankLimit || isDeltaGood || isCompetitive)
-      return true
-    else
-      return false
-  },
-  isRemoved: function() {
-    if (isOutRankLimit || isDeltaBad)
-      return true
-    else
-      return false
+  examRecord: function(){
+    const rankResult = checkRules.checkRank(),
+          competitiveResult = checkRules.checkCompetitve(),
+          deltaGoodResult = checkRules.checkDeltaGood();
+    if(!deltaGoodResult)
+      deltaBadResult = checkRules.checkDeltaBad();
+
+    // kept
+    if(rankResult || competitiveResult || deltaGoodResult)
+      return 1;
+    // remove
+    else if((!rankResult) && (!competitiveResult) && deltaBadResult)
+      return -1;
+    // considering
+    else 
+      return 0;
   }
 }
