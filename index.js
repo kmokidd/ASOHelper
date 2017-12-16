@@ -6,13 +6,16 @@ const XLSX = require('xlsx'),
 // put xlsx in the same dir
 const DATA = require('./data.js')
 
+// rule check
+const Dye = require('./mod-rules.js')
+
 const keywords = DATA.myKeywords,
       keywordsArr = keywords.split(',')
 
 const xlsFile = DATA.xlsFileName
 
 const obj = main()
-console.log("%j", obj)
+// console.log("%j", obj)
 
 
 // ************************************************************** //
@@ -26,8 +29,15 @@ function main() {
     dic[keyword] = Array.from(new Set(generateReGroup(result)))
   }
 
-  // return dic
-  return goThroughXlsx(xlsFile, dic)
+  // keyword with corresponding records
+  const parsedDic =  goThroughXlsx(xlsFile, dic)
+
+  let dyedDic = {}
+  for(let keyword in parsedDic) {
+    let pair = {}
+    pair[keyword] = parsedDic[keyword]
+    dyedDic[keyword] = dyeKeyword(pair)
+  }
 }
 
 
@@ -78,19 +88,13 @@ function goThroughXlsx(filePath, dic) {
         parsedDic[key] = {}
 
       dic[key].forEach(seg => {
+        // let record = desiredWordCell.v
         // 找到匹配的 record 了
         if (curWordValue.includes(seg)) {
-          let recordTuple = {}
-          recordTuple[desiredWordCell.v] = linkRecord(colIndex)
-
-          if (!parsedDic[key][seg])
-            parsedDic[key][seg] = []
-
-          parsedDic[key][seg].push(recordTuple)
+          parsedDic[key][curWordValue] = linkRecord(colIndex)
         }
       })
     }
-
 
     sheetWordIndex[1]++;
     colIndex++;
@@ -125,18 +129,20 @@ function goThroughXlsx(filePath, dic) {
     return arr
   }
 
-  // dyeRecord
-  // 符合”保留条件“的 green
-  // 符合”剔除条件“的 red
-  // default, black
-  function dyeRecord(records) {
-    // 符合保留条件
-    // if () {
+}
 
-    // } else if () {
-
-    // } else {
-
-    // }
-  }
+// dyeKeywords
+// 符合”保留条件“的 green
+// 符合”剔除条件“的 red
+// default, black
+function dyeKeyword(keyword) {
+  // console.log(keyword)
+  // 符合保留条件
+  const flag = Dye.examRecord(keyword)
+  if(flag === 0)
+    return 'black'
+  else if(flag > 0)
+    return 'green'
+  else
+    return 'red'
 }
