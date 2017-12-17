@@ -15,7 +15,7 @@ const keywords = DATA.myKeywords,
 const xlsFile = DATA.xlsFileName
 
 const obj = main()
-// console.log("%j", obj)
+console.log("%j", obj)
 
 
 // ************************************************************** //
@@ -31,13 +31,16 @@ function main() {
 
   // keyword with corresponding records
   const parsedDic =  goThroughXlsx(xlsFile, dic)
+  // console.log(parsedDic)
+
+  // console.log('-------------------------')
 
   let dyedDic = {}
   for(let keyword in parsedDic) {
-    let pair = {}
-    pair[keyword] = parsedDic[keyword]
-    dyedDic[keyword] = dyeKeyword(pair)
+    dyedDic[keyword] = dyeKeyword(parsedDic[keyword])
   }
+
+  return dyedDic
 }
 
 
@@ -101,9 +104,9 @@ function goThroughXlsx(filePath, dic) {
 
     desiredWordCell = worksheet[sheetWordIndex.join('')]
 
-    // 测试用，会删掉
-    if (sheetWordIndex[1] === 20)
-      break;
+    // --------------- 测试用，会删掉
+    // if (sheetWordIndex[1] === 20)
+    //   break;
   }
 
   return parsedDic
@@ -136,9 +139,13 @@ function goThroughXlsx(filePath, dic) {
 // 符合”剔除条件“的 red
 // default, black
 function dyeKeyword(keyword) {
-  // console.log(keyword)
-  // 符合保留条件
-  const flag = Dye.examRecord(keyword)
+  let flag = -1
+  // 如果没有被收录的关键词，去掉该词
+  if (Object.keys(keyword).length >0){
+    // 符合保留条件
+    flag = Dye.examRecord(keyword)
+  }
+  
   if(flag === 0)
     return 'black'
   else if(flag > 0)

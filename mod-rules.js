@@ -11,26 +11,6 @@ let isInRankLimit, isDeltaGood, isCompetitive,
 let _keyword // accept record from caller
 
 
-
-const checkRules = {
-  checkRank() {
-    
-  },
-  checkDeltaGood() {
-
-  },
-  checkDelatBad() {
-
-  },
-  checkCompetitve() {
-
-  }
-}
-
-
-
-
-
 module.exports = exports = {
   examRecord: function(keyword){
     _keyword = keyword
@@ -49,22 +29,35 @@ module.exports = exports = {
           hotness = keyword[record][2],
           count = keyword[record][3]
 
+      //-------- applying rules ------------------------
+      if(rank <= 3) rankOfKeptRule += 30
+      else if(rank <= 10) rankOfKeptRule += 10
+      // if(sizeOfKeyword > )
       // >80%, 20
-      if(rank < 20) rankOfKeptRule ++
+      else if(rank < 20) rankOfKeptRule ++
+      else
+        continue
+        
       if(!isNaN(delta)) {
         delta>=0? deltaUp++ : deltaDown++
       }
       if(hotness>6000 && count<600) competitive++
+      //-------- applying rules --------------------------
     }
+
+    let rankResult = 0,
+        deltaGoodResult = 0,
+        deltaBadResult = 0,
+        competitiveResult = 0
 
     if(rankOfKeptRule/sizeOfKeyword > 0.8)
       rankResult = 1
     if(deltaUp/sizeOfKeyword > 0.5 && deltaDown/sizeOfKeyword < 0.2 )
       deltaGoodResult = 1
     if(deltaDown/sizeOfKeyword > 0.7)
-      deltaGoodResult = 1
+      deltaBadResult = 1
     if(competitive>0)
-      competitive = 1
+      competitiveResult = 1
 
 
 
@@ -75,7 +68,7 @@ module.exports = exports = {
     //   deltaBadResult = checkRules.checkDeltaBad();
 
     // kept
-    if(rankResult || competitiveResult || deltaGoodResult)
+    if(rankResult || competitiveResult|| deltaGoodResult)
       return 1;
     // remove
     else if((!rankResult) && (!competitiveResult) && deltaBadResult)
