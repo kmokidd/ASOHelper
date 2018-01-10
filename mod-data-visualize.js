@@ -3,4 +3,5 @@
 
 'use strict'
 
-// require('child_process').exec('open http://www.baidu.com')
+const open = require("open");
+open("./index.html");
