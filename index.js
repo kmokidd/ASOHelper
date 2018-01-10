@@ -1,46 +1,60 @@
 'use strict';
+const XLSX = require('xlsx'), // analyze xls
+      nodejieba = require("nodejieba"),  // 中文分词
+      Ora = require('ora'); // a loading gif
+      
+// const Readable = require('stream').Readable;
+// const s = new Readable({objectMode: true});
 
-const XLSX = require('xlsx'),
-      nodejieba = require("nodejieba")
+const spinner = new Ora({
+  text: '处理中...'
+});
 
 // put xlsx in the same dir
-const DATA = require('./data.js')
+const DATA = require('./data.js');
 
 // rule check
-const Dye = require('./mod-rules.js')
+const Dye = require('./mod-rules.js');
 
 const keywords = DATA.myKeywords,
-      keywordsArr = keywords.split(',')
+      keywordsArr = keywords.split(',');
 
-const xlsFile = DATA.xlsFileName
+const xlsFile = DATA.xlsFileName;
 
-const obj = main()
-console.log("%j", obj)
 
+// ------------------------------------------------------------- //
+main();
+// ------------------------------------------------------------- //
 
 // ************************************************************** //
 
 function main() {
-  let dic = {}
+  // start processing visually
+  spinner.start();
+  // do processing
+  const obj = dataProcessing();
+  spinner.succeed('处理完成！\n');
+  console.log("%j", obj);
+  // if result can be gotten
 
-  for (let keyword of keywordsArr) {
-    let result = nodejieba.cut(keyword)
-      // convert array to set to delete duplicate words
-    dic[keyword] = Array.from(new Set(generateReGroup(result)))
+  function dataProcessing() {
+
+    let dic = {};
+    for (let keyword of keywordsArr) {
+      let result = nodejieba.cut(keyword);
+        // convert array to set to delete duplicate words
+      dic[keyword] = Array.from(new Set(generateReGroup(result)));
+    }
+    // keyword with corresponding records
+    const parsedDic =  goThroughXlsx(xlsFile, dic);
+    // console.log(parsedDic)
+
+    let dyedDic = {};
+    for(let keyword in parsedDic) {
+      dyedDic[keyword] = dyeKeyword(parsedDic[keyword]);
+    }
+    return dyedDic;
   }
-
-  // keyword with corresponding records
-  const parsedDic =  goThroughXlsx(xlsFile, dic)
-  // console.log(parsedDic)
-
-  // console.log('-------------------------')
-
-  let dyedDic = {}
-  for(let keyword in parsedDic) {
-    dyedDic[keyword] = dyeKeyword(parsedDic[keyword])
-  }
-
-  return dyedDic
 }
 
 
@@ -68,33 +82,32 @@ function generateReGroup(sliptedWordsArr) {
 // go through whole xls file
 // compare each keyword in dic
 function goThroughXlsx(filePath, dic) {
-  const wb = XLSX.readFile(filePath)
+  const wb = XLSX.readFile(filePath);
   const startSheetName = wb.SheetNames[0],
-    worksheet = wb.Sheets[startSheetName]
+    worksheet = wb.Sheets[startSheetName];
 
-  let colIndex = 8
+  let colIndex = 8;
   let sheetWordIndex = ['B', colIndex],
     sheetRankIndx = ['C', colIndex],
     sheetDeltaIndex = ['D', colIndex],
     sheetExpIndex = ['E', colIndex],
-    sheetCountIndex = ['F', colIndex]
+    sheetCountIndex = ['F', colIndex];
 
-  let desiredWordCell = worksheet[sheetWordIndex.join('')]
+  let desiredWordCell = worksheet[sheetWordIndex.join('')];
 
-  let parsedDic = {}
+  let parsedDic = {};
   while (desiredWordCell) {
     // 得到每一个
-    let curWordValue = desiredWordCell.v
+    let curWordValue = desiredWordCell.v;
 
     for (let key in dic) {
       if (!parsedDic[key])
-        parsedDic[key] = {}
+        parsedDic[key] = {};
 
       dic[key].forEach(seg => {
-        // let record = desiredWordCell.v
         // 找到匹配的 record 了
         if (curWordValue.includes(seg)) {
-          parsedDic[key][curWordValue] = linkRecord(colIndex)
+          parsedDic[key][curWordValue] = linkRecord(colIndex);
         }
       })
     }
@@ -102,14 +115,14 @@ function goThroughXlsx(filePath, dic) {
     sheetWordIndex[1]++;
     colIndex++;
 
-    desiredWordCell = worksheet[sheetWordIndex.join('')]
+    desiredWordCell = worksheet[sheetWordIndex.join('')];
 
     // --------------- 测试用，会删掉
     // if (sheetWordIndex[1] === 20)
     //   break;
   }
 
-  return parsedDic
+  return parsedDic;
 
   // linkRecord
   // record which has related word will be
@@ -119,17 +132,17 @@ function goThroughXlsx(filePath, dic) {
     let sheetRankIndex = ['C', index],
         sheetDeltaIndex = ['D', index],
         sheetExpIndex = ['E', index],
-        sheetCountIndex = ['F', index]
+        sheetCountIndex = ['F', index];
 
-    let arr = []
+    let arr = [];
     const desiredRankValue = worksheet[sheetRankIndex.join('')] ? worksheet[sheetRankIndex.join('')].v : 'n',
       desiredDeltaValue = worksheet[sheetDeltaIndex.join('')] ? worksheet[sheetDeltaIndex.join('')].v : 'blank',
       desiredExpValue = worksheet[sheetExpIndex.join('')] ? worksheet[sheetExpIndex.join('')].v : 'blank',
-      desiredCountValue = worksheet[sheetCountIndex.join('')] ? worksheet[sheetCountIndex.join('')].v : 'blank'
+      desiredCountValue = worksheet[sheetCountIndex.join('')] ? worksheet[sheetCountIndex.join('')].v : 'blank';
 
-    arr.push(desiredRankValue, desiredDeltaValue, desiredExpValue, desiredCountValue)
+    arr.push(desiredRankValue, desiredDeltaValue, desiredExpValue, desiredCountValue);
 
-    return arr
+    return arr;
   }
 
 }
@@ -145,7 +158,7 @@ function dyeKeyword(keyword) {
     // 符合保留条件
     flag = Dye.examRecord(keyword)
   }
-  
+
   if(flag === 0)
     return 'black'
   else if(flag > 0)
