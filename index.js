@@ -1,14 +1,10 @@
 'use strict';
 const XLSX = require('xlsx'), // analyze xls
       nodejieba = require("nodejieba"),  // 中文分词
-      Ora = require('ora'); // a loading gif
-      
-// const Readable = require('stream').Readable;
-// const s = new Readable({objectMode: true});
+      Ora = require('ora'), // a loading gif
+      open = require("open"), // open a result index
+      fs = require('fs'); // write .html file
 
-const spinner = new Ora({
-  text: '处理中...'
-});
 
 // put xlsx in the same dir
 const DATA = require('./data.js');
@@ -29,16 +25,22 @@ main();
 // ************************************************************** //
 
 function main() {
-  // start processing visually
-  spinner.start();
-  // do processing
+  // data processing
   const obj = dataProcessing();
-  spinner.succeed('处理完成！\n');
   console.log("%j", obj);
-  // if result can be gotten
+
+  // 测试用-------------
+  // const obj = { "key1": {color: "c1"}, "key2": {color: "c2"}};
+
+  // data visualization
+  writeAndOpen('index2.html', 'index.html', JSON.stringify(obj));
 
   function dataProcessing() {
+    // data process loading
+    const spinner = new Ora({ text: '处理中...'});
+    spinner.start();
 
+    // true start point
     let dic = {};
     for (let keyword of keywordsArr) {
       let result = nodejieba.cut(keyword);
@@ -53,6 +55,10 @@ function main() {
     for(let keyword in parsedDic) {
       dyedDic[keyword] = dyeKeyword(parsedDic[keyword]);
     }
+
+    // loading ends
+    spinner.succeed('处理完成！\n');
+
     return dyedDic;
   }
 }
@@ -160,9 +166,61 @@ function dyeKeyword(keyword) {
   }
 
   if(flag === 0)
-    return 'black'
+    return {color: "black"}
   else if(flag > 0)
-    return 'green'
+    return {color: "green"}
   else
-    return 'red'
+    return {color: "red"}
+}
+
+function writeAndOpen(filePath, tmplPath, resultData) {
+
+  let cont = '';
+
+  let innerHTMLScript = `<script>
+        const result = new Vue({
+          el: '.l--txt',
+          data: {
+            keywords: ${resultData}
+          }
+        })
+      </script>
+      </body>
+      </html>`;
+
+  fs.open(tmplPath, 'r', (err, fd) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        console.error('myfile does not exist');
+        return;
+      }
+      throw err;
+    }
+    
+    fs.readFile(tmplPath, 'utf8', (err, data)=>{
+      if(err) throw err;
+      cont = data + innerHTMLScript;
+
+      // 写入文件
+      fs.open(filePath, 'wx', (err, fd) => {
+        if(err) {
+          if (err.code === 'EEXIST')
+            console.error('文件已存在，将被覆盖');
+          else
+            throw err;
+        }
+
+        fs.writeFile(filePath, cont, (err) => {
+          if (err) throw err;
+
+          // 写完就关上
+          fs.closeSync(fs.constants.O_RDWR);
+
+          // 成功写入后打开结果页
+          open(filePath);
+        });
+      });
+    })
+  })
+
 }
