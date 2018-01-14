@@ -1,9 +1,11 @@
-// rules for color
-// return Bool
+/** 
+ ** rules for color
+ ** @return Bool
+ **/
 
-'use strict'
+'use strict';
 
-const RULES = require('./config.js')
+const RULES = require('../config.js')
 
 let isInRankLimit, isDeltaGood, isCompetitive,
     isOutRankLimit, isDeltaBad
@@ -59,13 +61,6 @@ module.exports = exports = {
     if(competitive>0)
       competitiveResult = 1
 
-
-
-    // const rankResult = checkRules.checkRank(),
-    //       competitiveResult = checkRules.checkCompetitve(),
-    //       deltaGoodResult = checkRules.checkDeltaGood();
-    // if(!deltaGoodResult)
-    //   deltaBadResult = checkRules.checkDeltaBad();
 
     // kept
     if(rankResult || competitiveResult|| deltaGoodResult)

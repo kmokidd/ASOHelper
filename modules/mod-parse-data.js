@@ -1,68 +1,42 @@
+/**
+ ** 1. parse keywords and analyze xlsx file
+ ** 2. link the two with each other
+ ** 3. judge each keyword acrt. Rules
+ **
+ ** @param string, xlsx file
+ ** @return object
+ **/
+
 'use strict';
+
 const XLSX = require('xlsx'), // analyze xls
-      nodejieba = require("nodejieba"),  // 中文分词
-      Ora = require('ora'), // a loading gif
-      open = require("open"), // open a result index
-      fs = require('fs'); // write .html file
+      nodejieba = require("nodejieba");  // 中文分词
+
+const Dye = require('./mod-rules.js'); // to-be-checked rules
 
 
-// put xlsx in the same dir
-const DATA = require('./data.js');
 
-// rule check
-const Dye = require('./mod-rules.js');
+module.exports = exports = function dataParsing(keywordsArr, xlsFile){
+  let dic = {};
 
-const keywords = DATA.myKeywords,
-      keywordsArr = keywords.split(',');
-
-const xlsFile = DATA.xlsFileName;
-
-
-// ------------------------------------------------------------- //
-main();
-// ------------------------------------------------------------- //
-
-// ************************************************************** //
-
-function main() {
-  // data processing
-  const obj = dataProcessing();
-  console.log("%j", obj);
-
-  // 测试用-------------
-  // const obj = { "key1": {color: "c1"}, "key2": {color: "c2"}};
-
-  // data visualization
-  writeAndOpen('index2.html', 'index.html', JSON.stringify(obj));
-
-  function dataProcessing() {
-    // data process loading
-    const spinner = new Ora({ text: '处理中...'});
-    spinner.start();
-
-    // true start point
-    let dic = {};
-    for (let keyword of keywordsArr) {
-      let result = nodejieba.cut(keyword);
-        // convert array to set to delete duplicate words
-      dic[keyword] = Array.from(new Set(generateReGroup(result)));
-    }
-    // keyword with corresponding records
-    const parsedDic =  goThroughXlsx(xlsFile, dic);
-    // console.log(parsedDic)
-
-    let dyedDic = {};
-    for(let keyword in parsedDic) {
-      dyedDic[keyword] = dyeKeyword(parsedDic[keyword]);
-    }
-
-    // loading ends
-    spinner.succeed('处理完成！\n');
-
-    return dyedDic;
+  // 分词和组词
+  for (let keyword of keywordsArr) {
+    let result = nodejieba.cut(keyword);
+      // convert array to set to delete duplicate words
+    dic[keyword] = Array.from(new Set(generateReGroup(result)));
   }
-}
 
+  // keyword with corresponding records
+  const parsedDic =  goThroughXlsx(xlsFile, dic);
+  // console.log(parsedDic)
+
+  let dyedDic = {};
+  for(let keyword in parsedDic) {
+    dyedDic[keyword] = dyeKeyword(parsedDic[keyword]);
+  }
+
+  return dyedDic;
+}
 
 // generate all possible grouping
 function generateReGroup(sliptedWordsArr) {
@@ -150,7 +124,6 @@ function goThroughXlsx(filePath, dic) {
 
     return arr;
   }
-
 }
 
 // dyeKeywords
@@ -171,56 +144,4 @@ function dyeKeyword(keyword) {
     return {color: "green"}
   else
     return {color: "red"}
-}
-
-function writeAndOpen(filePath, tmplPath, resultData) {
-
-  let cont = '';
-
-  let innerHTMLScript = `<script>
-        const result = new Vue({
-          el: '.l--txt',
-          data: {
-            keywords: ${resultData}
-          }
-        })
-      </script>
-      </body>
-      </html>`;
-
-  fs.open(tmplPath, 'r', (err, fd) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        console.error('myfile does not exist');
-        return;
-      }
-      throw err;
-    }
-    
-    fs.readFile(tmplPath, 'utf8', (err, data)=>{
-      if(err) throw err;
-      cont = data + innerHTMLScript;
-
-      // 写入文件
-      fs.open(filePath, 'wx', (err, fd) => {
-        if(err) {
-          if (err.code === 'EEXIST')
-            console.error('文件已存在，将被覆盖');
-          else
-            throw err;
-        }
-
-        fs.writeFile(filePath, cont, (err) => {
-          if (err) throw err;
-
-          // 写完就关上
-          fs.closeSync(fs.constants.O_RDWR);
-
-          // 成功写入后打开结果页
-          open(filePath);
-        });
-      });
-    })
-  })
-
 }
