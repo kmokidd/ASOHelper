@@ -8,7 +8,6 @@
  **/
 
 'use strict';
-
 const XLSX = require('xlsx'), // analyze xls
       nodejieba = require("nodejieba");  // 中文分词
 
@@ -17,8 +16,9 @@ const Dye = require('./mod-rules.js'); // to-be-checked rules
 
 
 module.exports = exports = function dataParsing(keywordsArr, xlsFile){
-  let dic = {};
+  // const spinner = ora('处理中...').start();
 
+  let dic = {};
   // 分词和组词
   for (let keyword of keywordsArr) {
     let result = nodejieba.cut(keyword);
@@ -34,7 +34,6 @@ module.exports = exports = function dataParsing(keywordsArr, xlsFile){
   for(let keyword in parsedDic) {
     dyedDic[keyword] = dyeKeyword(parsedDic[keyword]);
   }
-
   return dyedDic;
 }
 
