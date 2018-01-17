@@ -18,7 +18,7 @@ const Dye = require("./mod-rules.js"); // to-be-checked rules
 
 module.exports = exports = function dataParsing(data){
 
-  const keywordsArr = data.myKeywords.split(",");
+  const keywordsArr = data.keywords.split(",");
   const xlsFile = data.xlsFilePath;
 
 
