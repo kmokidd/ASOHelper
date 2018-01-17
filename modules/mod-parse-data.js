@@ -7,22 +7,26 @@
  ** @return object
  **/
 
-'use strict';
-const XLSX = require('xlsx'), // analyze xls
-      nodejieba = require("nodejieba");  // 中文分词
+"use strict";
 
-const Dye = require('./mod-rules.js'); // to-be-checked rules
+const XLSX = require("xlsx"); // analyze xls
+const nodejieba = require("nodejieba");  // 中文分词
+
+const Dye = require("./mod-rules.js"); // to-be-checked rules
 
 
 
-module.exports = exports = function dataParsing(keywordsArr, xlsFile){
-  // const spinner = ora('处理中...').start();
+module.exports = exports = function dataParsing(data){
+
+  const keywordsArr = data.myKeywords.split(",");
+  const xlsFile = data.xlsFilePath;
+
 
   let dic = {};
   // 分词和组词
   for (let keyword of keywordsArr) {
     let result = nodejieba.cut(keyword);
-      // convert array to set to delete duplicate words
+    // convert array to set to delete duplicate words
     dic[keyword] = Array.from(new Set(generateReGroup(result)));
   }
 
@@ -35,7 +39,7 @@ module.exports = exports = function dataParsing(keywordsArr, xlsFile){
     dyedDic[keyword] = dyeKeyword(parsedDic[keyword]);
   }
   return dyedDic;
-}
+};
 
 // generate all possible grouping
 function generateReGroup(sliptedWordsArr) {
@@ -53,7 +57,7 @@ function generateReGroup(sliptedWordsArr) {
 
   let result = Array.from(sliptedWordsArr)
   for (let combo of generateCombinations(sliptedWordsArr)) {
-    result.push(combo.join(''))
+    result.push(combo.join(""))
   }
   return result;
 }
@@ -65,14 +69,10 @@ function goThroughXlsx(filePath, dic) {
   const startSheetName = wb.SheetNames[0],
     worksheet = wb.Sheets[startSheetName];
 
-  let colIndex = 8;
-  let sheetWordIndex = ['B', colIndex],
-    sheetRankIndx = ['C', colIndex],
-    sheetDeltaIndex = ['D', colIndex],
-    sheetExpIndex = ['E', colIndex],
-    sheetCountIndex = ['F', colIndex];
+  let colIndex = 8,
+    sheetWordIndex = ["B", colIndex];
 
-  let desiredWordCell = worksheet[sheetWordIndex.join('')];
+  let desiredWordCell = worksheet[sheetWordIndex.join("")];
 
   let parsedDic = {};
   while (desiredWordCell) {
@@ -88,13 +88,13 @@ function goThroughXlsx(filePath, dic) {
         if (curWordValue.includes(seg)) {
           parsedDic[key][curWordValue] = linkRecord(colIndex);
         }
-      })
+      });
     }
 
     sheetWordIndex[1]++;
     colIndex++;
 
-    desiredWordCell = worksheet[sheetWordIndex.join('')];
+    desiredWordCell = worksheet[sheetWordIndex.join("")];
 
     // --------------- 测试用，会删掉
     // if (sheetWordIndex[1] === 20)
@@ -108,16 +108,16 @@ function goThroughXlsx(filePath, dic) {
   // pushed into specific array as the corresponding value of
   // the word
   function linkRecord(index) {
-    let sheetRankIndex = ['C', index],
-        sheetDeltaIndex = ['D', index],
-        sheetExpIndex = ['E', index],
-        sheetCountIndex = ['F', index];
+    let sheetRankIndex = ["C", index],
+      sheetDeltaIndex = ["D", index],
+      sheetExpIndex = ["E", index],
+      sheetCountIndex = ["F", index];
 
     let arr = [];
-    const desiredRankValue = worksheet[sheetRankIndex.join('')] ? worksheet[sheetRankIndex.join('')].v : 'n',
-      desiredDeltaValue = worksheet[sheetDeltaIndex.join('')] ? worksheet[sheetDeltaIndex.join('')].v : 'blank',
-      desiredExpValue = worksheet[sheetExpIndex.join('')] ? worksheet[sheetExpIndex.join('')].v : 'blank',
-      desiredCountValue = worksheet[sheetCountIndex.join('')] ? worksheet[sheetCountIndex.join('')].v : 'blank';
+    const desiredRankValue = worksheet[sheetRankIndex.join("")] ? worksheet[sheetRankIndex.join("")].v : "n",
+      desiredDeltaValue = worksheet[sheetDeltaIndex.join("")] ? worksheet[sheetDeltaIndex.join("")].v : "blank",
+      desiredExpValue = worksheet[sheetExpIndex.join("")] ? worksheet[sheetExpIndex.join("")].v : "blank",
+      desiredCountValue = worksheet[sheetCountIndex.join("")] ? worksheet[sheetCountIndex.join("")].v : "blank";
 
     arr.push(desiredRankValue, desiredDeltaValue, desiredExpValue, desiredCountValue);
 
@@ -134,13 +134,13 @@ function dyeKeyword(keyword) {
   // 如果没有被收录的关键词，去掉该词
   if (Object.keys(keyword).length >0){
     // 符合保留条件
-    flag = Dye.examRecord(keyword)
+    flag = Dye.examRecord(keyword);
   }
 
   if(flag === 0)
-    return {color: "black"}
+    return {color: "black"};
   else if(flag > 0)
-    return {color: "green"}
+    return {color: "green"};
   else
-    return {color: "red"}
+    return {color: "red"};
 }
