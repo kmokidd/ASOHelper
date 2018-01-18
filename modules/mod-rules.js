@@ -1,5 +1,6 @@
 /**
- ** rules for color
+ ** rules for color,
+ ** check rules in rules.numbers
  ** @return Bool
  **/
 

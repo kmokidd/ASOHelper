@@ -27,5 +27,6 @@ const spinner = ora("处理中...").start(); // show loading spinner
 setTimeout(function () {
   const obj = modParseData(data); // data processing
   spinner.succeed("处理完成！\n"); // loading spinner ends
+  // console.log("%j", obj);
   modDataVisualization("index2.html", "template.html", JSON.stringify(obj)); // show resule in browser
 }, 2000);

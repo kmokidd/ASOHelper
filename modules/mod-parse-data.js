@@ -25,14 +25,18 @@ module.exports = exports = function dataParsing(data){
   let dic = {};
   // 分词和组词
   for (let keyword of keywordsArr) {
-    let result = nodejieba.cut(keyword);
-    // convert array to set to delete duplicate words
-    dic[keyword] = Array.from(new Set(generateReGroup(result)));
+    if(keyword.length > 5)
+      dic[keyword] = ["'"+keyword+"'"];
+    else {
+      let result = nodejieba.cut(keyword); // 中文分词
+      dic[keyword] = Array.from(new Set(generateReGroup(result))); // convert array to set to delete duplicate words
+    }
   }
+  // console.log(dic);
 
   // keyword with corresponding records
   const parsedDic =  goThroughXlsx(xlsFile, dic);
-  // console.log(parsedDic)
+  console.log(parsedDic);
 
   let dyedDic = {};
   for(let keyword in parsedDic) {
@@ -55,9 +59,9 @@ function generateReGroup(sliptedWordsArr) {
     yield * doGenerateCombinations(0, []);
   }
 
-  let result = Array.from(sliptedWordsArr)
+  let result = Array.from(sliptedWordsArr);
   for (let combo of generateCombinations(sliptedWordsArr)) {
-    result.push(combo.join(""))
+    result.push(combo.join(""));
   }
   return result;
 }
@@ -76,16 +80,16 @@ function goThroughXlsx(filePath, dic) {
 
   let parsedDic = {};
   while (desiredWordCell) {
-    // 得到每一个
-    let curWordValue = desiredWordCell.v;
+    let curWordValue = "'"+desiredWordCell.v+"'"; // get value as String of each cell
+    // console.log(`---------${curWordValue}---------`);
+    // console.log(typeof curWordValue);
 
     for (let key in dic) {
       if (!parsedDic[key])
         parsedDic[key] = {};
 
       dic[key].forEach(seg => {
-        // 找到匹配的 record 了
-        if (curWordValue.includes(seg)) {
+        if (curWordValue.toLowerCase().includes(seg.toLowerCase())) { // case insensetive
           parsedDic[key][curWordValue] = linkRecord(colIndex);
         }
       });
