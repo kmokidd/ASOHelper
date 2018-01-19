@@ -6,6 +6,8 @@
 const open = require("open"), // open .html in browser
   fs = require("fs"); // write .html file
 
+const promise = require('promise');
+
 module.exports = exports = function writeAndOpen(filePath, tmplPath, resultData) {
   let cont = "";
 
@@ -20,6 +22,7 @@ module.exports = exports = function writeAndOpen(filePath, tmplPath, resultData)
       </body>
       </html>`;
 
+  // 用 promise
   fs.open(tmplPath, "r", (err, fd) => {
     if (err) {
       if (err.code === "ENOENT") {
@@ -29,30 +32,35 @@ module.exports = exports = function writeAndOpen(filePath, tmplPath, resultData)
       throw err;
     }
 
-    fs.readFile(tmplPath, "utf8", (err, data) => {
-      if(err) throw err;
-      cont = data + innerHTMLScript;
-
-      // 写入文件
-      fs.open(filePath, "wx", (err, fd) => {
-        if(err) {
-          if (err.code === "EEXIST") {
-            console.error("文件已存在，将被覆盖");
-          }
-          else {
-            throw err;
-          }
-        }
-
-        fs.writeFile(filePath, cont, (err) => {
-          if (err) throw err;
-
-          // 写完就关上
-          fs.closeSync(fs.constants.O_RDWR);
-          // 成功写入后打开结果页
-          open(filePath);
-        });
+    readFile(tmplPath)
+      .then(function(data){
+        let cont = data + innerHTMLScript;
+        writeFile(filePath, cont);
+      })
+      .then(function(){
+        fs.closeSync(fs.constants.O_RDWR);
+        // 成功写入后打开结果页
+        open(filePath);
+      }, function(err){
+        throw err;
       });
-    });
   });
 };
+
+function readFile(filePath) {
+  return new Promise(function(resolve, reject){
+    fs.readFile(filePath, "utf8", (err, data)=>{
+      if(err) reject(err);
+      else resolve(data);
+    });
+  });
+}
+
+function writeFile(filePath, cont) {
+  return new Promise(function(resolve, reject){
+    fs.writeFile(filePath, cont, (err) => {
+      if (err) reject(err);
+      else resolve(filePath);
+    });
+  });
+}
