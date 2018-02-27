@@ -47,6 +47,10 @@ module.exports = exports = function writeAndOpen(filePath, tmplPath, resultData)
   });
 };
 
+// function openFile(filePath) {
+//   return
+// }
+
 function readFile(filePath) {
   return new Promise(function(resolve, reject){
     fs.readFile(filePath, "utf8", (err, data)=>{

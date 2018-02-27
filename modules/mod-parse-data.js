@@ -18,14 +18,15 @@ const Dye = require("./mod-rules.js"); // to-be-checked rules
 
 module.exports = exports = function dataParsing(data){
 
-  const keywordsArr = data.keywords.split(",");
+  const keywordsArr = data.keywords.split(",").map(kw => kw.trim());
   const xlsFile = data.xlsFilePath;
 
 
   let dic = {};
   // 分词和组词
   for (let keyword of keywordsArr) {
-    if(keyword.length > 5)
+    const engReg = /[a-z]/i;
+    if(keyword.length > 5 || engReg.test(keyword))
       dic[keyword] = ["'"+keyword+"'"];
     else {
       let result = nodejieba.cut(keyword); // 中文分词
