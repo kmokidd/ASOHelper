@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <title>竞品分析</title>
+  <style>
+    table {
+      margin-top: 20px;
+      width: 100%;
+    }
+    table td p {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow:ellipsis;
+    }
+  </style>
+  <script src="/javascripts/vue.js"></script>
+</head>
+<body>
+  <section class="wrap">
+    <form method="post" enctype="multipart/form-data">
+      <dl>
+        <dt>上传所有竞品 ASO 数据</dt>
+        <dd><input type="file" name="file" id="" @change="uploadFile" multiple></dd>
+      </dl>
+      <button class="btn btn-main" @click="postData">提交分析</button>
+    </form>
+
+    <section class="result" v-show="isShow">
+      <table>
+        <thead>
+          <tr>
+            <th>关键词</th>
+            <th>排名</th>
+            <th>变化</th>
+            <th>热度</th>
+            <th>搜索结果数</th>
+            <th>出现频率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="word in keywordsArr">
+            <td>{{word.keyword}}</td>
+            <td>{{word.data[0]}}</td>
+            <td>{{word.data[1]}}</td>
+            <td>{{word.data[2]}}</td>
+            <td>{{word.data[3]}}</td>
+            <td>
+              <p v-for="where in word.from">{{where}}</p>
+              <!-- {{word.from}} -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+
+  
+  <script src="/javascripts/jquery-2.0.3.min.js"></script>
+  <script src="/javascripts/d3.v3.min.js"></script>
+  <script src="/javascripts/tree-split.js"></script>
+
+  <script>
+    const width = 680, height =800;
+    const wrap = new Vue({
+      el: ".wrap",
+        data: {
+          keywordsArr: [],
+          isShow: false,
+          fd: new FormData()
+        },
+        methods: {
+          uploadFile(e) {
+            const files = e.target.files || e.dataTransfer.files;
+            console.log(files);
+            if (!files.length)
+              return;
+
+            let fileArray = [];
+            for(let key in files) {
+              fileArray.push(files[key]);
+            }
+
+            fileArray.forEach(file => {
+              this.fd.append(`competitors`, file);
+            })
+          },
+          postData(e) {
+            e.preventDefault();
+            const _self = this;
+
+            $.ajax({
+              url: '/compete/postCompeteData',
+              type: 'POST',
+              data: _self.fd,
+              contentType: false,
+              processData: false,
+              success(res) {
+                console.log('in succ');
+                if(res.code === 0) {
+                  console.log(res);
+                  _self.keywordsArr = res.data;
+                  _self.isShow = true;
+                }
+              },
+              error(err) {
+                console.log('in err');
+                console.log(err);
+              }
+            })
+          }
+        }
+    })
+  </script>
+</body>
+</html>

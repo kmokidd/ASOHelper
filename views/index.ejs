@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/javascripts/vue.js"></script>
+    <title>index</title>
+  </head>
+  <body>
+    <section class="wrap">
+      <form method="post" enctype="multipart/form-data">
+        <dl>
+          <dt>关键词</dt>
+          <dd><textarea name="kw" id="" cols="30" rows="10" v-model="keywords">{{keywords}}</textarea></dd>
+        </dl>
+        <dl>
+          <dt>上传 ASO 数据</dt>
+          <dd><input type="file" name="file" id="" @change="uploadFile"></dd>
+        </dl>
+        <button class="btn btn-main" @click="postData">提交分析</button>
+      </form>
+
+      <!-- 经过 rule 之后的结果 -->
+      <section class="result" v-show="isShow">
+        <h3>建议保留</h3>
+        <span v-for="keyword in decidedKw" class="txt" :style="'color:' + keyword.color">{{keyword.title}}&nbsp;</span>
+      </section>
+
+        <!-- <ul class="l--txt">
+          <li class="txt" v-for="(value, word) in decidedKw" >
+            <span class="txt" :style="value">{{word}}</span>
+          </li>
+        </ul> -->
+
+        <section class="advice" v-show="isShow">
+          <h3>建议组词/拆词/删除</h3>
+          <!-- <span v-for="keyword in consideredKw" class="txt" :style="'color:' + keyword.color">{{keyword.title}}&nbsp;</span>         -->
+          <ul class="list" >
+            <li class="txt" v-for="keyword in consideredKw">
+              <p><a :href="'#'+keyword.title" :style="'color:' + keyword.color">{{keyword.title}}</a>，表现平平，要不要看看下面的词：</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>关键词</th>
+                    <th>排名</th>
+                    <th>变化</th>
+                    <th>热度</th>
+                    <th>搜索结果数</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="word in keyword.betterWords">
+                    <td>{{word.keyword}}</td>
+                    <td>{{word.data[0]}}</td>
+                    <td>{{word.data[1]}}</td>
+                    <td>{{word.data[2]}}</td>
+                    <td>{{word.data[3]}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </li>
+          </ul>
+        </section>
+      </section>
+
+      
+      <!-- tree 结果 -->
+      <section id="svg-wrapper">
+      </section>
+    </section>
+    
+
+    <script src="/javascripts/jquery-2.0.3.min.js"></script>
+    <script src="/javascripts/d3.v3.min.js"></script>
+    <script src="/javascripts/tree-split.js"></script>
+    <script>
+      let DATA = {};
+
+      const width = 680, height =800;
+
+
+      //  ------- vue part 
+      const wrap = new Vue({
+        el: ".wrap",
+        data: {
+          keywords: '',
+          isShow: false,
+          decidedKw: {},
+          consideredKw: {},
+          form: new FormData()
+        },
+        methods: {
+          uploadFile(e) {
+            const files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+              return;
+
+            this.form.set('file', files[0]);
+          },
+          postData(e) {
+            e.preventDefault();
+            // 每次点击的时候，先清空结果
+            $('#svg-wrapper').empty();
+
+            console.log(`keywords is ${this.keywords}`);
+            this.form.set('kw', this.keywords);
+            const _self = this;
+
+            $.ajax({
+              url: '/postData',
+              type:'POST',
+              data: _self.form,
+              contentType: false,
+              processData: false,
+              success: function(res) {
+                console.log('in succ');
+                if(res.code === 0) {
+                  const allData = res.data[0]; // DATA[0] 是所有的
+                  _self.decidedKw = res.data[1].decided; // DATA[1].decided 是确定保留或者剔除的
+                  _self.consideredKw = res.data[1].considered; // DATA[1].considered 是考虑中可以优化的
+                  
+                  _self.isShow = true;
+
+                  /**
+                   * TYPE_RANK = 0,
+                   *  TYPE_DELTA = 1,
+                   *  TYPE_EXP = 2,
+                   *  TYPE_COUNT = 3;
+                  **/
+                  allData.forEach(data => {
+
+                    // 每个词有一个 section
+                    $('#svg-wrapper').append(`<section class="word-wrapper" id="${data.title}"></section>`);
+                    $('#svg-wrapper').find('#'+data.title)
+                                     .append(`<h2><a href="#${data.title}" id="${data.title}" style="color:${data.color}">${data.title}</a></h2>`)
+                                     .append(`<section class="tree-wrapper" id=${data.title}-tree></section>`);
+
+                    data.cont.forEach((d, index)=> {
+                      $('#svg-wrapper').find(`#${data.title} .tree-wrapper`)
+                                       .append(`<section class="tree" id=${data.title}-${index}-tree></section>`);
+                      let tree = new Tree(d, width, height, index);
+                      tree.init(`#${data.title}-${index}-tree`);
+                    })
+                  });
+                }else {
+                  console.log(res);
+                }
+              },
+              error: function(err) {
+                console.log('in err');
+                console.log(err);
+              }
+            })
+          },
+          testRouter(e) {
+            e.preventDefault();
+            const _self = this;
+            $.ajax({
+              url: '/testRouter',
+              type: 'POST',
+              data: {data: _self.keywords},
+              success(res) {
+                console.log('in succ');
+                console.log(res);
+              },
+              error(err) {
+                console.log('in err');
+                console.log(err);
+              }
+            })
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
