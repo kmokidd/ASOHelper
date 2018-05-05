@@ -1,14 +1,25 @@
 # README
 
-This is an ASO helper which helps ASOer judge the value of each keywords.
+ASO小助手，发现被遗漏的 ASO 细节。
 
-## How to Run it
-After successfully setting both things above, switch to the project dir and run below line in your terminal:
++ 功能1：分析现有 ASO 字段，给出保留/替换建议
++ 功能2：分析给定 ASO 表现，筛选出优秀的关键词
+
+
+
+## 使用
+
+暂时没有服务器。
+
+node 8 环境，保证 9001 端口未被占用，执行：
+
 ```bash
-node main.js
+node app.js
 ```
-Then follow cmd line instructions to input app's keywords which splited by ',' and ASO data file path. Like below:
-![](https://img3.doubanio.com/view/status/m/public/fb2fe270bb37bef.webp)
++ 功能1：打开浏览器，输入 localhost:9001
 
-## How to Judge the Value
-If all the things go well, you will see the result in browser. Each keywords will be listed in different color. Right now, words in color **GREEN** means be better to stay. Words in color **RED** means that you'd better kick it off. And words in color **black** means 'just so so', you can remove it or keep it as you want.
+  ![](https://qzonestyle.gtimg.cn/aoi/sola/20180505115417_mWgl7IkEnj.png)
+
++ 功能2：打开浏览器，输入 localhost:9001/compete
+
+  ![](https://qzonestyle.gtimg.cn/aoi/sola/20180505115445_DaOHfeXWES.png)
