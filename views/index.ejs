@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="/javascripts/vue.js"></script>
+    <link rel='stylesheet' href='stylesheets/style.css' />
+    <script src="javascripts/vue.js"></script>
     <title>index</title>
   </head>
   <body>
@@ -10,7 +10,7 @@
       <form method="post" enctype="multipart/form-data">
         <dl>
           <dt>关键词</dt>
-          <dd><textarea name="kw" id="" cols="30" rows="10" v-model="keywords">{{keywords}}</textarea></dd>
+          <dd><textarea placeholder="关键词，用英文逗号分隔" name="kw" id="" cols="30" rows="10" v-model="keywords">{{keywords}}</textarea></dd>
         </dl>
         <dl>
           <dt>上传 ASO 数据</dt>
@@ -69,9 +69,9 @@
     </section>
     
 
-    <script src="/javascripts/jquery-2.0.3.min.js"></script>
-    <script src="/javascripts/d3.v3.min.js"></script>
-    <script src="/javascripts/tree-split.js"></script>
+    <script src="javascripts/jquery-2.0.3.min.js"></script>
+    <script src="javascripts/d3.v3.min.js"></script>
+    <script src="javascripts/tree-split.js"></script>
     <script>
       let DATA = {};
 
@@ -106,7 +106,7 @@
             const _self = this;
 
             $.ajax({
-              url: '/postData',
+              url: 'postData',
               type:'POST',
               data: _self.form,
               contentType: false,
@@ -132,13 +132,13 @@
                     $('#svg-wrapper').append(`<section class="word-wrapper" id="${data.title}"></section>`);
                     $('#svg-wrapper').find('#'+data.title)
                                      .append(`<h2><a href="#${data.title}" id="${data.title}" style="color:${data.color}">${data.title}</a></h2>`)
-                                     .append(`<section class="tree-wrapper" id=${data.title}-tree></section>`);
+                                     .append(`<section class="tree-wrapper" id=tree-${data.title}></section>`);
 
                     data.cont.forEach((d, index)=> {
                       $('#svg-wrapper').find(`#${data.title} .tree-wrapper`)
-                                       .append(`<section class="tree" id=${data.title}-${index}-tree></section>`);
+                                       .append(`<section class="tree" id=tree-${index}-${data.title}></section>`);
                       let tree = new Tree(d, width, height, index);
-                      tree.init(`#${data.title}-${index}-tree`);
+                      tree.init(`#tree-${index}-${data.title}`);
                     })
                   });
                 }else {

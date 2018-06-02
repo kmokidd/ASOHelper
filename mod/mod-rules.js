@@ -18,6 +18,7 @@ let isInRankLimit, isDeltaGood, isCompetitive,
 let _keyword; // accept record from caller
 
 module.exports = exports = {
+  // --xxxxxx-- 暂时不用 --xxxxxx--
   examRecord: function(keyword){
     _keyword = keyword;
 
@@ -100,14 +101,16 @@ module.exports = exports = {
     segArr.forEach(segObj => {
       let wordArr = segObj.children;
       wordArr.forEach(w => {
-        wordObj[w.keyword] = w.data;
+        if(!wordObj[w.keyword])
+          wordObj[w.keyword] = w.data;
       });
     });
 
+    
     sizeOfWords = Object.keys(wordObj).length;
 
-    // console.log(wordObj);
-    // console.log(Object.keys(wordObj).length);
+    console.log(wordObj);
+    console.log(Object.keys(wordObj).length);
 
     for(let key in wordObj) {
       let rank = wordObj[key][0],
@@ -116,22 +119,30 @@ module.exports = exports = {
           count = wordObj[key][3];
 
       //-------- applying rules ------------------------
+      // 添加每种衡量维度上的权重，不同维度，权重不同
+      // 比如 rank 的权重是最大的
       if(rank <= 3) rankOfKeptRule += 30;
-      else if(rank <= 10) rankOfKeptRule += 10;
-      // if(sizeOfWords > )
-      // >80%, 20
-      else if(rank < 20) rankOfKeptRule ++;
-      else
-        continue;
+      else if(rank <= 10) rankOfKeptRule += 20;
+      else if(rank <= 20) rankOfKeptRule += 10;
+      else if(rank < 30) rankOfKeptRule ++;
+      else continue;
 
       if(!isNaN(delta)) {
         delta>=0? deltaUp++ : deltaDown++;
       }
-      if(hotness>6000 && count<600) competitive++;
+      if(hotness>6000 && count<200) competitive += 30;
+      else if(hotness>5000 && count<100) competitive += 20;
+      else if(hotness>4605 && count<50) competitive += 10;
+      else continue;
       //-------- applying rules --------------------------
     }
 
-    if(rankOfKeptRule/sizeOfWords > 0.8)
+    console.log(`rankOfKeptRule = ${rankOfKeptRule}`);
+    console.log(`deltaUp = ${deltaUp}`);
+    console.log(`deltaDown = ${deltaDown}`);
+    console.log(`competitive = ${competitive}`);
+
+    if(rankOfKeptRule > 9)
       rankResult = 1;
     if(deltaUp/sizeOfWords > 0.5 && deltaDown/sizeOfWords < 0.2 )
       deltaGoodResult = 1;
@@ -141,7 +152,7 @@ module.exports = exports = {
       competitiveResult = 1;
 
     // kept
-    if(rankResult || competitiveResult|| deltaGoodResult)
+    if(rankResult || competitiveResult || deltaGoodResult)
       return 1;
     // remove
     else if((!rankResult) && (!competitiveResult) && deltaBadResult)
