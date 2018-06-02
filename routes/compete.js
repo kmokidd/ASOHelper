@@ -23,7 +23,7 @@ const multer = require('multer'),
 const modUtils = require("../mod/mod-utils.js");
 // 处理数据
 const modParsor = require("../mod/mod-cpt-parsor.js");
-const modAnalyseCompete = require("../mod/mod-analyse-compete.js");
+// const modAnalyseCompete = require("../mod/mod-analyse-compete.js");
 
 /* 路由 */
 router.get('/', function(req, res, next) {

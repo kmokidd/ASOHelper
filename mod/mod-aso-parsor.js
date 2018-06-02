@@ -11,7 +11,7 @@
 
 const fs = require('fs'); // 文件模块
 const XLSX = require("xlsx"); // analyze xls
-const nodejieba = require("nodejieba");  // 中文分词
+const Segment = require('segment'); // 载入模块
 
 const Rule = require("./mod-rules.js"); // to-be-checked rules
 const Sort = require("./mod-sort-2.js"); // array sort
@@ -40,8 +40,13 @@ class AsoParsor {
       }
       else {
         innerKw.children = [];
+
+        const segment = new Segment(); // 创建实例
+        segment.useDefault(); // 使用默认的识别模块及字典，载入字典文件需要1秒，仅初始化时执行一次即可
+        let result = segment.doSegment(keyword, { // 中文分词
+          simple: true
+        });
   
-        let result = nodejieba.cut(keyword); // 中文分词
         const resultArr = Array.from(new Set(__generateReGroup(result))); // 删除重复收录的词
         resultArr.forEach(function(r){
           innerKw.children.push({"keyword": r, "children":[]});

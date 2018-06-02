@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='stylesheets/style.css' />
   <title>竞品分析</title>
   <style>
     table {
@@ -16,7 +16,7 @@
       text-overflow:ellipsis;
     }
   </style>
-  <script src="/javascripts/vue.js"></script>
+  <script src="javascripts/vue.js"></script>
 </head>
 <body>
   <section class="wrap">
@@ -58,9 +58,9 @@
   </section>
 
   
-  <script src="/javascripts/jquery-2.0.3.min.js"></script>
-  <script src="/javascripts/d3.v3.min.js"></script>
-  <script src="/javascripts/tree-split.js"></script>
+  <script src="javascripts/jquery-2.0.3.min.js"></script>
+  <script src="javascripts/d3.v3.min.js"></script>
+  <script src="javascripts/tree-split.js"></script>
 
   <script>
     const width = 680, height =800;
@@ -92,7 +92,7 @@
             const _self = this;
 
             $.ajax({
-              url: '/compete/postCompeteData',
+              url: 'compete/postCompeteData',
               type: 'POST',
               data: _self.fd,
               contentType: false,
