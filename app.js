@@ -26,7 +26,7 @@ app.use('/', index); // 关键词分析
 app.use('/compete', compete); // 竞品分析
 
 // sever starts
-const server = app.listen(9001, function(){
+const server = app.listen(9123, function(){
   console.log(`server starts at ${server.address().port}`);
 });
 
