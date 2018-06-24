@@ -57,7 +57,8 @@ class CptParsor {
         newComer.data = __linkRecord(rowIndex, worksheet);
 
         // 符合条件的，才进一步筛选
-        if((newComer.data[2] >= 5000) && (newComer.data[3] <= 100)) {
+        if(((newComer.data[2] >= 5000) && (newComer.data[3] <= 100)) || 
+           ((newComer.data[2] >= 4605) && (newComer.data[3] <= 50))) {
           // resultArr.push(newComer);
           __checkExist(newComer);
         }
