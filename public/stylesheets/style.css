@@ -3,14 +3,20 @@
 }
 
 body {
-  padding: 50px;
+  padding: 20px 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
 a {
   color: #00B7FF;
 }
+ul {
+  padding: 0;
+  margin: 0;
+}
 
+[v-cloak] {
+  display: none;
+}
 
 .wrap {
   margin-bottom: 30px;
@@ -35,10 +41,19 @@ a {
   background-color: #ddd;
   font-size: 14px;
 }
+nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+nav .link {
+  display: block;
+  margin-right: 10px;
+}
 dl {
   display: block;
 }
-input,
+input:not([type="checkbox"]),
 textarea {
   outline: none;
   display: block;

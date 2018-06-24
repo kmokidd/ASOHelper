@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel='stylesheet' href='/stylesheets/style.css' />
-  <script src="/javascripts/vue.js"></script>
-  <title>Android</title>
+  <link rel='stylesheet' href='stylesheets/style.css' />
+  <script src="javascripts/vue.js"></script>
+  <title>安卓市场</title>
   <style>
     * {
         list-style: none;
@@ -19,6 +19,9 @@
         font-size: 24px;
         line-height: 1.5;
         color: #000;
+      }
+      .btn-wrapper {
+        margin-bottom: 20px;
       }
       .btn {
         outline: none;
@@ -37,64 +40,265 @@
       dl {
         display: block;
       }
-      input,
+      input[type="text"],
       textarea {
         outline: none;
+
         display: block;
         width: 100%;
         padding: 5px 3px;
+        padding-right: 40px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        margin-bottom: 10px;
         resize: none;
 
         font-size: 14px;
+      }
+      .market-list {
+        display: flex;
+      }
+      .market {
+        flex:1;
+        margin-bottom: 20px;
+      }
+      .market label {
+        cursor: pointer;
+      }
+      .block-hd {
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .input-wrapper {
+        position: relative;
+        z-index: 0;
+      }
+      .input-wrapper textarea {
+        height: auto;
+        max-height: 100px;
+        overflow: scroll;
+        padding-bottom: 30px;
+      }
+      .input-wrapper.err input[type="text"],
+      .input-wrapper.err textarea {
+        border-color: #f00;
+      }
+      .input-wrapper.err .count {
+        color: #f00;
+      }
+      .count {
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+
+        font-size: 12px;
+        color: #000;
+      }
+      .op {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        font-size: 12px;
+        color: #000;
+      }
+      .op .sub,
+      .op .tiny {
+        display: block;
+      }
+      .op .tiny {
+        width: 100px;
+        padding: 3px;
+        margin: 0 5px;
+        box-sizing: border-box;
+      }
+      .op .btn {
+        margin-top: 0;
       }
   </style>
 </head>
 <body>
   <section class="wrap">
+    <nav>
+      <a class="link" href="/">首页</a>
+      <a class="link" href="compete">竞品分析</a>
+    </nav>
+
+
+    <!-- 市场列表 -->
     <ul class="market-list">
       <li class="market">
-        <span class="name">通用</span>
-        <section class="input-wrapper">
-          <input type="text" name="keywords" placeholder="关键词，空格分隔，不超过100个字符">
-          <textarea name="desc" id="" cols="30" rows="10" placeholder="描述，不超过 1500 个字符，不得出现违法广告词"></textarea>
-        </section>
+        <label for="mGeneral">
+          <input type="checkbox" name="" id="mGeneral" v-model="appstore.ap1.isChecked" :checked="appstore.ap1.isChecked">
+          <span class="market-name">通用</span>
+        </label>
       </li>
       <li class="market">
-        <span class="name">应用宝</span>
-        <section class="input-wrapper">
-          <input type="text" name="keywords" placeholder="关键词，空格分隔，不超过100个字符">
-          <textarea name="desc" id="" cols="30" rows="10" placeholder="描述，不超过 1500 个字符，不得出现违法广告词"></textarea>
-        </section>
+        <label for="mVivo">
+          <input type="checkbox" name="" :checked="appstore.ap2.isChecked" v-model="appstore.ap2.isChecked" id="mVivo" >
+          <span class="market-name">vivo</span>
+        </label>
       </li>
       <li class="market">
-        <span class="name">小米</span>
-        <section class="input-wrapper">
-          <input type="text" name="keywords" placeholder="关键词，空格分隔，不超过100个字符">
-          <textarea name="desc" id="" cols="30" rows="10" placeholder="描述，不超过 1500 个字符，不得出现违法广告词"></textarea>
-        </section>
+        <label for="mOppo">
+          <input type="checkbox" name="" :checked="appstore.ap3.isChecked" v-model="appstore.ap3.isChecked" id="mOppo">
+          <span class="market-name">oppo</span>
+        </label>
       </li>
       <li class="market">
-        <span class="name">vivo</span>
-        <section class="input-wrapper">
-          <input type="text" name="keywords" placeholder="关键词，空格分隔，不超过100个字符">
-          <textarea name="desc" id="" cols="30" rows="10" placeholder="描述，不超过 1500 个字符，不得出现违法广告词"></textarea>
-        </section>
+        <label for="mHuawei">
+          <input type="checkbox" name="" :checked="appstore.ap4.isChecked" v-model="appstore.ap4.isChecked" id="mHuawei">
+          <span class="market-name">华为</span>
+        </label>
       </li>
       <li class="market">
-        <span class="name">oppo</span>
-        <section class="input-wrapper">
-          <input type="text" name="keywords" placeholder="关键词，空格分隔，不超过100个字符">
-          <textarea name="desc" id="" cols="30" rows="10" placeholder="描述，不超过 1500 个字符，不得出现违法广告词"></textarea>
-        </section>
+        <label for="mMi">
+          <input type="checkbox" name="" :checked="appstore.ap5.isChecked" v-model="appstore.ap5.isChecked" id="mMi">
+          <span class="market-name">小米</span>
+        </label>
       </li>
       <li class="market">
-        <span class="name">华为</span>
-        <section class="input-wrapper">
-          <input type="text" name="keywords" placeholder="关键词，空格分隔，不超过100个字符">
-          <textarea name="desc" id="" cols="30" rows="10" placeholder="描述，不超过 1500 个字符，不得出现违法广告词"></textarea>
-        </section>
+        <label for="mMeizu">
+          <input type="checkbox" name="" :checked="appstore.ap6.isChecked" v-model="appstore.ap6.isChecked" id="mMeizu">
+          <span class="market-name">魅族</span>
+        </label>
+      </li>
+      <li class="market">
+        <label for="mAppstore">
+          <input type="checkbox" name="" :checked="appstore.ap7.isChecked" v-model="appstore.ap7.isChecked" id="mAppstore">
+          <span class="market-name">应用宝</span>
+        </label>
       </li>
     </ul>
+
+    <section class="btn-wrapper">
+      <button class="btn btn-main" @click="exp">导出</button>
+    </section>
+
+    <!-- 要填写的字段 -->
+    <section class="form" v-show="isShow" v-cloak>
+      <section class="block">
+        <header class="block-hd">应用名</header>
+        <section class="block-bd">
+          <!-- 8个字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap1.appname.isErr}" v-show="appstore.ap1.isChecked">
+            <input type="text" autocomplete="off" name="appname" placeholder="通用，8个字符以内" @keyup="onlyLenCheck(1, 'appname', appstore.ap1.appname.cont, 0, 8, false)" v-model="appstore.ap1.appname.cont">
+            <span class="count"><span class="number">{{appstore.ap1.appname.counter}}</span>/8</span>
+          </section>
+          <!-- 20个字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap2.appname.isErr}" v-show="appstore.ap2.isChecked">
+            <input type="text" autocomplete="off" name="appname" placeholder="vivo 市场，20个字符以内" @keyup="onlyLenCheck(2, 'appname', appstore.ap2.appname.cont, 0, 20, false)" v-model="appstore.ap2.appname.cont">
+            <span class="count"><span class="number">{{appstore.ap2.appname.counter}}</span>/20</span>
+          </section>
+          <!-- 8个汉字/16个英文字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap5.appname.isErr}" v-show="appstore.ap5.isChecked">
+            <input type="text" autocomplete="off" name="appname" placeholder="小米市场，8个字符，英文算半个字符" @keyup="onlyLenCheck(5, 'appname', appstore.ap5.appname.cont, 0, 8, true)" v-model="appstore.ap5.appname.cont">
+            <span class="count"><span class="number">{{appstore.ap5.appname.counter}}</span>/8</span>
+          </section>
+          <!-- 12个英文字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap6.appname.isErr}" v-show="appstore.ap6.isChecked">
+            <input type="text" autocomplete="off" name="appname" placeholder="魅族市场，12个字符" @keyup="onlyLenCheck(6, 'appname', appstore.ap6.appname.cont, 0, 12, false)" v-model="appstore.ap6.appname.cont">
+            <span class="count"><span class="number">{{appstore.ap6.appname.counter}}</span>/12</span>
+          </section>
+        </section>
+      </section>
+
+      <section class="block">
+        <header class="block-hd">简单描述</header>
+        <section class="block-bd">
+          <!-- 8个字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap0.simpleDesc.isErr}" v-show="appstore.ap1.isChecked || appstore.ap2.isChecked || appstore.ap3.isChecked  || appstore.ap4.isChecked  || appstore.ap5.isChecked  || appstore.ap6.isChecked  || appstore.ap7.isChecked">
+            <input type="text" autocomplete="off" name="simpleDesc" placeholder="8个字符以内" @keyup="onlyLenCheck(0, 'simpleDesc', appstore.ap0.simpleDesc.cont, 0, 8, false)" v-model="appstore.ap0.simpleDesc.cont">
+            <span class="count"><span class="number">{{appstore.ap0.simpleDesc.counter}}</span>/8</span>
+          </section>
+        </section>
+      </section>
+
+      <section class="block">
+        <header class="block-hd">一句话简介</header>
+        <section class="block-bd">
+          <!-- 15个字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap1.sentence.isErr}" v-show="appstore.ap1.isChecked || appstore.ap6.isChecked">
+            <input type="text" autocomplete="off" name="sentence" placeholder="15个字符以内" @keyup="sentenceCheck(1, appstore.ap1.sentence.cont, 15)" v-model="appstore.ap1.sentence.cont">
+            <span class="count"><span class="number">{{appstore.ap1.sentence.counter}}</span>/15</span>
+          </section>
+          <!-- 17个字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap3.sentence.isErr}" v-show="appstore.ap3.isChecked">
+            <input type="text" autocomplete="off" name="sentence" placeholder="17个字符以内，不能有空格和标点" @keyup="sentenceCheck(3, appstore.ap3.sentence.cont, 17)" v-model="appstore.ap3.sentence.cont">
+            <span class="count"><span class="number">{{appstore.ap3.sentence.counter}}</span>/17</span>
+          </section>
+          <!-- 18个字符以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap4.sentence.isErr}" v-show="appstore.ap4.isChecked">
+            <input type="text" autocomplete="off" name="sentence" placeholder="18个字符以内" @keyup="sentenceCheck(4, appstore.ap4.sentence.cont, 18)" v-model="appstore.ap4.sentence.cont">
+            <span class="count"><span class="number">{{appstore.ap4.sentence.counter}}</span>/18</span>
+          </section>
+          <!-- 17个中文或者34个英文以内 -->
+          <section class="input-wrapper" :class="{err: appstore.ap5.sentence.isErr}" v-show="appstore.ap5.isChecked">
+            <input type="text" autocomplete="off" name="sentence" placeholder="17 个汉字或 34 个英文" @keyup="sentenceCheck(5, appstore.ap5.sentence.cont, 17, true)" v-model="appstore.ap5.sentence.cont">
+            <span class="count"><span class="number">{{appstore.ap5.sentence.counter}}</span>/17</span>
+          </section>
+        </section>
+      </section>
+
+      <section class="block">
+        <header class="block-hd">关键词</header>
+        <section class="op">
+          <span class="sub">替换分隔符，将</span>
+          <input type="text" class="tiny" placeholder="现有分隔符" v-model="rule.kw.oldSpliter">
+          <span class="sub" >替换为</span>
+          <input type="text" class="tiny" placeholder="新的分隔符" v-model="rule.kw.newSpliter">
+          <button class="btn btn-main" @click="replaceKwSpliter()">替换</button>
+        </section>
+        <section class="block-bd">
+          <!-- 100个字符 -->
+          <section class="input-wrapper" :class="{err: appstore.ap1.keywords.isErr}" v-show="appstore.ap1.isChecked">
+            <input type="text" autocomplete="off" name="keywords" placeholder="100个字符以内" @keyup="keywordsCheck(1, appstore.ap1.keywords.cont, 100)" v-model="appstore.ap1.keywords.cont">
+            <span class="count"><span class="number">{{appstore.ap1.keywords.counter}}</span>/100</span>
+          </section>
+          <!-- 4个，空格分隔，长度不超过 100个字符 -->
+          <section class="input-wrapper" :class="{err: appstore.ap4.keywords.isErr}" v-show="appstore.ap4.isChecked">
+            <input type="text" autocomplete="off" name="keywords" placeholder="4个，空格分隔，长度不超过 100个字符" @keyup="keywordsCheck(4, appstore.ap4.keywords.cont, 100)" v-model="appstore.ap4.keywords.cont">
+            <span class="count"><span class="number">{{appstore.ap4.keywords.counter}}</span>/100</span>
+          </section>
+          <!-- 空格分隔，长度不超过 100个字符 -->
+          <section class="input-wrapper" :class="{err: appstore.ap5.keywords.isErr}" v-show="appstore.ap5.isChecked || appstore.ap6.isChecked">
+            <input type="text" autocomplete="off" name="keywords" placeholder="空格分隔，长度不超过 100个字符" @keyup="keywordsCheck(5, appstore.ap5.keywords.cont, 100)" v-model="appstore.ap5.keywords.cont">
+            <span class="count"><span class="number">{{appstore.ap5.keywords.counter}}</span>/100</span>
+          </section>
+        </section>
+      </section>
+
+      <section class="block">
+        <header class="block-hd">应用描述</header>
+        <section class="block-bd">
+          <!-- 100 ~ 300 个字 -->
+          <section class="input-wrapper" :class="{err: appstore.ap1.desc.isErr}" v-show="appstore.ap1.isChecked">
+            <textarea name="" id="" cols="30" rows="10" autocomplete="off" name="desc" placeholder="100 ~ 300 个字" @keyup="descCheck(1, appstore.ap1.desc.cont, 100, 300)" v-model="appstore.ap1.desc.cont"></textarea>
+            <span class="count"><span class="number">{{appstore.ap1.desc.counter}}</span>/100-300</span>
+          </section>
+          <!-- 100 ~ 1000 个字 -->
+          <section class="input-wrapper" :class="{err: appstore.ap2.desc.isErr}" v-show="appstore.ap2.isChecked || appstore.ap4.isChecked || appstore.ap6.isChecked">
+            <textarea name="" id="" cols="30" rows="10" autocomplete="off" name="desc" placeholder="100 ~ 1000 个字" @keyup="descCheck(2, appstore.ap2.desc.cont, 100, 1000)" v-model="appstore.ap2.desc.cont"></textarea>
+            <span class="count"><span class="number">{{appstore.ap2.desc.counter}}</span>/100-1000</span>
+          </section>
+          <!-- 50 ~ 1500 个字 -->
+          <section class="input-wrapper" :class="{err: appstore.ap3.desc.isErr}" v-show="appstore.ap3.isChecked">
+            <textarea name="" id="" cols="30" rows="10" autocomplete="off" name="desc" placeholder="50 ~ 1500 个字" @keyup="descCheck(3, appstore.ap3.desc.cont, 50, 1500)" v-model="appstore.ap3.desc.cont"></textarea>
+            <span class="count"><span class="number">{{appstore.ap3.desc.counter}}</span>/50-1500</span>
+          </section>
+          <!-- 500 个字，检查广告法 -->
+          <section class="input-wrapper" :class="{err: appstore.ap7.desc.isErr}" v-show="appstore.ap7.isChecked">
+            <textarea name="" id="" cols="30" rows="10" autocomplete="off" name="desc" placeholder="500个字以内，广告法注意" @keyup="descCheck(7, appstore.ap7.desc.cont, 0, 500)" v-model="appstore.ap7.desc.cont"></textarea>
+            <span class="count"><span class="number">{{appstore.ap7.desc.counter}}</span>/500</span>
+          </section>
+        </section>
+      </section>
+    </section>
   </section>
+
+  <script src="javascripts/xlsx.full.min.js"></script>
+  <script src="javascripts/FileSaver.min.js"></script>
+  <script type="module" src="javascripts/android.js"></script>
 </body>
 </html>
