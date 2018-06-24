@@ -6,8 +6,27 @@
     <title>ASOHelper</title>
   </head>
   <body>
-    <section class="wrap">
+    <section class="wrap" v-cloak>
+      <nav>
+        <a class="link" href="compete">竞品分析</a>
+        <a class="link" href="android">生成安卓ASO字段</a>
+      </nav>
+
       <form method="post" enctype="multipart/form-data">
+        <dl style="display: none">
+          <dt>搜索热度设置</dt>
+          <dd>
+            <input type="number" min="4605" placeholder="最小值，默认为4605，可为空">~
+            <input type="number" min="4605" placeholder="最大值，默认为4605，可为空">
+          </dd>
+        </dl>
+        <dl  style="display: none">
+          <dt>搜索结果数</dt>
+          <dd>
+            <input type="number" min="1" placeholder="最小值，默认为1，可为空">~
+            <input type="number" min="1" placeholder="最大值，默认为1，可为空">
+          </dd>
+        </dl>
         <dl>
           <dt>关键词</dt>
           <dd><textarea placeholder="关键词，用英文逗号分隔" name="kw" id="" cols="30" rows="10" v-model="keywords">{{keywords}}</textarea></dd>
@@ -24,12 +43,6 @@
         <h3>建议保留</h3>
         <span v-for="keyword in decidedKw" class="txt" :style="'color:' + keyword.color">{{keyword.title}}&nbsp;</span>
       </section>
-
-        <!-- <ul class="l--txt">
-          <li class="txt" v-for="(value, word) in decidedKw" >
-            <span class="txt" :style="value">{{word}}</span>
-          </li>
-        </ul> -->
 
         <section class="advice" v-show="isShow">
           <h3>建议组词/拆词/删除</h3>

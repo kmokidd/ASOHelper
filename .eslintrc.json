@@ -1,5 +1,14 @@
 {
     "parserOptions": {
-        "ecmaVersion": 8
+        "ecmaVersion": 8,
+        "sourceType": "module"
+    },
+    "ecmaFeatures": {
+        "modules": true
+    },
+    "env": {
+        "browser": true,
+        "jquery": true,
+        "es6": true
     }
   }

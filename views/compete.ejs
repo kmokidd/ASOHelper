@@ -20,6 +20,11 @@
 </head>
 <body>
   <section class="wrap">
+    <nav>
+      <a class="link" href="/">首页</a>
+      <a class="link" href="android">生成安卓ASO字段</a>
+    </nav>
+
     <form method="post" enctype="multipart/form-data">
       <dl>
         <dt>上传所有竞品 ASO 数据</dt>
@@ -28,7 +33,7 @@
       <button class="btn btn-main" @click="postData">提交分析</button>
     </form>
 
-    <section class="result" v-show="isShow">
+    <section class="result" v-show="isShow" v-cloak>
       <table>
         <thead>
           <tr>

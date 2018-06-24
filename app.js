@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var compete = require('./routes/compete');
+var android = require('./routes/android');
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index); // 关键词分析
 app.use('/compete', compete); // 竞品分析
+app.use('/android', android); // 安卓字段
 
 // sever starts
 const server = app.listen(9123, function(){
