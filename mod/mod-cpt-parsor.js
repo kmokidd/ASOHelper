@@ -44,8 +44,10 @@ class CptParsor {
       const startSheetName = wb.SheetNames[0],
             worksheet = wb.Sheets[startSheetName];
 
-      let rowIndex = 8,
-          sheetWordIndex = ["B", rowIndex], // 关键词所在列
+      const colWordIndex = "A";
+
+      let rowIndex = 2,
+          sheetWordIndex = [colWordIndex, rowIndex], // 关键词所在列
           desiredWordCell = worksheet[sheetWordIndex.join("")]; // 关键词开始的那一行
 
       while(desiredWordCell) {
@@ -54,7 +56,7 @@ class CptParsor {
           data: [],
           from: [fileName]
         };
-        newComer.data = __linkRecord(rowIndex, worksheet);
+        newComer.data = __linkRecord(colWordIndex, rowIndex, worksheet);
 
         // 符合条件的，才进一步筛选
         if(((newComer.data[2] >= 5000) && (newComer.data[3] <= 100)) || 
@@ -78,11 +80,21 @@ class CptParsor {
     // record which has related word will be
     // pushed into specific array as the corresponding value of
     // the word
-    function __linkRecord(index, worksheet) {
-      let sheetRankIndex = ["C", index],
-        sheetDeltaIndex = ["D", index],
-        sheetExpIndex = ["E", index],
-        sheetCountIndex = ["F", index];
+    function __linkRecord(colStartAlphabet, index, worksheet) {
+      const colRankIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+1),
+            colDeltaIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+2),
+            colExpIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+3),
+            colCountIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+4);
+
+      let sheetRankIndex = [colRankIndex, index],
+          sheetDeltaIndex = [colDeltaIndex, index],
+          sheetExpIndex = [colExpIndex, index],
+          sheetCountIndex = [colCountIndex, index];
+
+      // let sheetRankIndex = ["C", index],
+      //   sheetDeltaIndex = ["D", index],
+      //   sheetExpIndex = ["E", index],
+      //   sheetCountIndex = ["F", index];
 
       let arr = [];
       const desiredRankValue = worksheet[sheetRankIndex.join("")] ? worksheet[sheetRankIndex.join("")].v : "n",

@@ -81,12 +81,18 @@ class AsoParsor {
 
   // 清洗
   _clean(filePath, dic) {
-    const wb = XLSX.readFile(filePath);
+    // csv 编码格式需要解决
+    // 1. csv -> xlsx
+    // 2. 修改 csv 的 encode
+    // 3. 读每个 cell 的时候，改每个的编码方式
+    const wb = XLSX.readFile(filePath); 
     const startSheetName = wb.SheetNames[0],
           worksheet = wb.Sheets[startSheetName];
+    
+    const colWordIndex = "A";
   
-    let colIndex = 8,
-        sheetWordIndex = ["B", colIndex]; // 收录词所在列
+    let colIndex = 2,
+        sheetWordIndex = [colWordIndex, colIndex]; // 收录词所在列
   
     let desiredWordCell = worksheet[sheetWordIndex.join("")];
   
@@ -94,13 +100,14 @@ class AsoParsor {
     while (desiredWordCell) {
       // 收录的词
       let curWordValue = "'"+desiredWordCell.v+"'"; // get value as String of each cell
+      console.log(curWordValue);
   
       dic.children.forEach((keyword) => {
         keyword.children.forEach((seg)=>{
           let word = {"keyword": "", "data": []};
           if (curWordValue.toLowerCase().includes(seg.keyword.toLowerCase())) { // case insensetive
             word.keyword = curWordValue;
-            word.data = __linkRecord(colIndex); // 把匹配的 word 的 rank、delta、exp 和 result 数据存入 data 字段中
+            word.data = __linkRecord(colWordIndex, colIndex); // 把匹配的 word 的 rank、delta、exp 和 result 数据存入 data 字段中
             seg.children.push(word);
           }
         });
@@ -112,23 +119,28 @@ class AsoParsor {
       desiredWordCell = worksheet[sheetWordIndex.join("")];
   
       // --------------- 测试用，会删掉
-      // if (sheetWordIndex[1] === 2)
+      // if (sheetWordIndex[1] === 5)
       //   break;
     }
     return __delBlankSeg(dic);
 
     // 记录一个词的排序、变化、热度、搜索结果
-    function __linkRecord(index) {
-      let sheetRankIndex = ["C", index],
-        sheetDeltaIndex = ["D", index],
-        sheetExpIndex = ["E", index],
-        sheetCountIndex = ["F", index];
+    function __linkRecord(colStartAlphabet, index) {
+      const colRankIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+1),
+            colDeltaIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+2),
+            colExpIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+3),
+            colCountIndex = String.fromCharCode(colStartAlphabet.charCodeAt(0)+4);
+
+      let sheetRankIndex = [colRankIndex, index],
+          sheetDeltaIndex = [colDeltaIndex, index],
+          sheetExpIndex = [colExpIndex, index],
+          sheetCountIndex = [colCountIndex, index];
   
       let arr = [];
       const desiredRankValue = worksheet[sheetRankIndex.join("")] ? worksheet[sheetRankIndex.join("")].v : "n",
-        desiredDeltaValue = worksheet[sheetDeltaIndex.join("")] ? worksheet[sheetDeltaIndex.join("")].v : 0,
-        desiredExpValue = worksheet[sheetExpIndex.join("")] ? worksheet[sheetExpIndex.join("")].v : 0,
-        desiredCountValue = worksheet[sheetCountIndex.join("")] ? worksheet[sheetCountIndex.join("")].v : 0;
+            desiredDeltaValue = worksheet[sheetDeltaIndex.join("")] ? worksheet[sheetDeltaIndex.join("")].v : 0,
+            desiredExpValue = worksheet[sheetExpIndex.join("")] ? worksheet[sheetExpIndex.join("")].v : 0,
+            desiredCountValue = worksheet[sheetCountIndex.join("")] ? worksheet[sheetCountIndex.join("")].v : 0;
   
       arr.push(desiredRankValue, desiredDeltaValue, desiredExpValue, desiredCountValue);
   

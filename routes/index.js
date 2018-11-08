@@ -8,7 +8,7 @@ const path = require('path');
 
 // 全局配置
 const Global = {
-  correctExt: '.xlsx.xls.numbers',
+  correctExt: '.xlsx.xls.numbers.csv',
   targetDir: path.resolve(__dirname, '..') + '/upload'
 };
 
