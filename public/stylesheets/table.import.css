@@ -13,7 +13,6 @@ thead th {
   height: 32px;
   line-height: 32px;
   background-color: #F5F6FA;
-
   text-align: center;
   font-size: 14px;
   color: #70798E;
@@ -27,9 +26,14 @@ tbody td {
   border-right: 1px solid #CCCFD6;
 }
 tbody td {
-  padding: 10px 0;
+  padding: 10px 5px;
 }
 tbody td p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+
   margin-bottom: 5px;
 }
 tbody td p:last-of-type {

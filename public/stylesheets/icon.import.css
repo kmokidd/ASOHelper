@@ -45,3 +45,9 @@
   background-image: url(../images/icon-loading.svg);
   animation: rotate 600ms linear infinite;
 }
+
+.icon-checked {
+  width: 17px;
+  height: 12px;
+  background-image: url(../images/icon-checked.png);
+}

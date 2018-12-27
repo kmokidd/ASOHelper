@@ -15,7 +15,7 @@ function segLenCheck(data, index, attr, str, minLen, maxLen, flag=false) {
 }
 
 const wrap = new Vue({
-  el: '.wrap',
+  el: '.aso',
   data: {
     appname1: '',
     counter1: 0,
